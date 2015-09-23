@@ -169,6 +169,7 @@ void ProblemStructure::initializeVelocityBoundary() {
     exit(-1);
   }
 
+  
   #ifdef DEBUG
     cout << "<Initialized boundary model as: \"" << boundaryModel << "\">" << endl;
     cout << "<U Velocity Boundary Data>" << endl;

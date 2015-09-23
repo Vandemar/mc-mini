@@ -14,6 +14,7 @@
 #endif
 #include "geometry/dataWindow.h"
 #include "geometry/geometry.h"
+#include "geometry/domain.h"
 #include "problem/problem.h"
 #include "parser/parser.h"
 
@@ -173,6 +174,39 @@ void ProblemStructure::solveStokes() {
 // Solve the advection/diffusion equation
 // U X T -> T
 void ProblemStructure::solveAdvectionDiffusion() {
+  // Combining the boundary and internal data of velocity in both the u and v direction, into one data structure class called Domain.
+  DataWindow<double> uVelocityWindow (geometry.getUVelocityData(), N - 1, M);
+  DataWindow<double> vVelocityWindow (geometry.getVVelocityData(), N, M - 1);
+  DataWindow<double> uVelocityBoundaryWindow (geometry.getUVelocityBoundaryData(), 2, M);
+  DataWindow<double> vVelocityBoundaryWindow (geometry.getVVelocityBoundaryData(), N, 2);
+  // Calculate cell-centered velocities (MxN cell-centered grid)
+  for (int i = 0; i < M; ++i) {
+    for (int j = 0; j < N; ++j) {
+      FieldSet *cellOfDomain = wrapper.domain[M][N];
+      
+      double leftVelocity   = (j == 0) ?
+                              uVelocityBoundaryWindow (0, i) :
+                              uVelocityWindow (j - 1, i);
+      double rightVelocity  = (j == (N - 1)) ?
+                              uVelocityBoundaryWindow (1, i) :
+                              uVelocityWindow (j, i);
+      double bottomVelocity = (i == 0) ?
+                              vVelocityBoundaryWindow (j, 0) :
+                              vVelocityWindow (j, i - 1);
+      double topVelocity    = (i == (M - 1)) ?
+                              vVelocityBoundaryWindow (j, 1) :
+                              vVelocityWindow (j, i);
+
+      cellOfDomain.vVelocity = (topVelocity + bottomVelocity) / 2;
+      cellOfDomain.uVelocity = (leftVelocity + rightVelocity) / 2;
+      // Check if the cell-centered velocity is machine-epsilon, and make it true zero if so.
+      if (abs (cellOfDomain.uVelocity)  < 1E-10)
+        cellOfDomain.uVelocity = 0;
+      if (abs (cellOfDomain.vVelocity) < 1E-10)
+        cellOfDomain.vVelocity = 0;
+    }
+  }
+
   #ifdef DEBUG
     cout << "<Using \"" << advectionMethod << "\" for advection>" << endl;
   #endif
@@ -200,7 +234,7 @@ void ProblemStructure::solveAdvectionDiffusion() {
     cerr << "<Unexpected diffusion method: \"" << diffusionMethod << "\" : Shutting down now>" << endl;
     exit (-1);
   }
- 
+
   #ifdef DEBUG
     cout << "<Finished Advection/Diffusion Step>" << endl << endl;
   #endif

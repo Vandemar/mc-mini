@@ -16,6 +16,7 @@
 #include "matrixForms/sparseForms.h"
 #include "matrixForms/denseForms.h"
 #include "geometry/geometry.h"
+#include "geometry/domain.h"
 #include "problem/problem.h"
 #include "output/output.h"
 #include "parser/parser.h"
@@ -35,7 +36,9 @@ int main(int argc, char ** argv) {
 
   ParamParser parser(string{argv[1]});
   GeometryStructure geometry (parser);
-  ProblemStructure  problem  (parser, geometry);
+  //Cell-centered domain 
+  Domain grid(geometry);
+  ProblemStructure  problem  (parser, geometry, grid);
   OutputStructure   output   (parser, geometry, problem);
 
   problem.initializeProblem();
