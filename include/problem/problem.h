@@ -1,7 +1,6 @@
 #pragma once
 
 #include "parser/parser.h"
-#include "geometry/domain.h"
 
 /*! ProblemStructure holds all of the specific details and routines for the
  *  current problem which would be out-of-place in the GeometryStructure.
@@ -15,7 +14,7 @@ class ProblemStructure {
      *  Construct the ProblemStructure object with a reference to the 
      *  ParamParser and GeometryStructure objects.
      */
-    ProblemStructure (ParamParser& pp, GeometryStructure& gs, Domain& grid);
+    ProblemStructure (ParamParser& pp, GeometryStructure& gs);
 
     /** Initialize the problem. 
      *  This includes initializing the timestep, setting the initial viscosity,
@@ -135,6 +134,4 @@ class ProblemStructure {
 
     double viscosity;
     double diffusivity;
-  public:
-    Domain& wrapper;
 };

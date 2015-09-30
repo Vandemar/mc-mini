@@ -87,6 +87,16 @@ void ProblemStructure::initializeTemperature() {
         else
           temperatureWindow (j, i) = referenceTemperature;
       }
+  } else if (temperatureModel == "fallingSquare") {
+// In this implementation, the temperature functions merely as a compositional field with a value
+// of 1 inside the square and 0 outside the square.  
+    for (int i = 0; i < M; ++i)
+      for (int j = 0; j < N; ++j) {
+        if ((M / 4 < j && j < 3 * M / 4) && (N / 4 < i && i < 3 * N / 4))
+          temperatureWindow (j, i) = referenceTemperature + temperatureScale;
+        else
+          temperatureWindow (j, i) = referenceTemperature;
+      }
   } else if (temperatureModel == "circle") {
      double center_x;
      double center_y;
@@ -187,11 +197,11 @@ void ProblemStructure::initializeViscosity() {
   if (viscosityModel == "constant") {
     if (parser.push ("problemParams")) {
       if (parser.tryPush ("initialViscosity")) {
-        parser.queryParamDouble ("viscosityScale", viscosity, 1.0);
+        parser.queryParamDouble ("viscosityScale", viscosity, 1.0E21);
       
         parser.pop();
       } else {
-        viscosity = 1.0;
+        viscosity = 1.0E21;
       }
       parser.pop();
     }

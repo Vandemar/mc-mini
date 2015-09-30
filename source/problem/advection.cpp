@@ -420,12 +420,40 @@ void ProblemStructure::frommMethod() {
       for (int j = 0; j < (N - 1); ++j)
         halfTimeUForcingWindow (j, i) = 0;
 
+// TODO: EGP thinks the average should be ((temperatureWindow(j,i)+temperatureWindow(j+1,i))/2)  
     for (int i = 0; i < (M - 1); ++i)
       for (int j = 0; j < N; ++j) {
         halfTimeVForcingWindow (j, i) =  -1 * densityConstant *
                                           (1 - thermalExpansion * 
                                            ((halfTimeTemperatureWindow (j, i) + 
                                              halfTimeTemperatureWindow (j, i + 1)) / 2 -
+                                            referenceTemperature));
+      }
+  } else if (forcingModel == "fallingSquare") {
+    double referenceTemperature;
+    double densityConstant;
+    double thermalExpansion;
+
+    if (parser.push ("problemParams")) {
+      if (parser.push ("buoyancyModelParams")) {
+        parser.queryParamDouble ("referenceTemperature", referenceTemperature, 0.0);
+        parser.queryParamDouble ("densityConstant",      densityConstant,      3200.0);
+        parser.queryParamDouble ("thermalExpansion",     thermalExpansion,       -100.0);
+        parser.pop();
+      }
+      parser.pop();
+    }
+
+    for (int i = 0; i < M; ++i)
+      for (int j = 0; j < (N - 1); ++j)
+        halfTimeUForcingWindow (j, i) = 0;
+
+    for (int i = 0; i < (M - 1); ++i)
+      for (int j = 0; j < N; ++j) {
+        halfTimeVForcingWindow (j, i) =  -1 * densityConstant *
+                                          (1 - thermalExpansion * 
+                                           ((halfTimeTemperatureWindow (j, i) + 
+                                             halfTimeTemperatureWindow (j+1, i)) / 2 -
                                             referenceTemperature));
       }
   } else {
@@ -616,7 +644,7 @@ void ProblemStructure::frommMethod() {
         if (i > 1) {
           secondBottomFirstOrderT = temporaryTemperature ((i - 2) * N + j);
         } else {
-          secondBottomFirstOrderT = temperatureBoundaryWindow (0, j);
+          secondBottomFirstOrderT = temperatureBoundaryWindow (j, 0);
         }
 
         if (i < (M - 1)) {

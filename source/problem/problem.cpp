@@ -10,7 +10,6 @@
 
 #include "matrixForms/sparseForms.h"
 #include "geometry/geometry.h"
-#include "geometry/domain.h"
 #include "problem/problem.h"
 #include "parser/parser.h"
 #include "debug.h"
@@ -20,8 +19,7 @@ using namespace std;
 
 ProblemStructure::ProblemStructure 
     (ParamParser&       pp,
-     GeometryStructure& gs,
-     Domain&          grid) :
+     GeometryStructure& gs) :
   /** References to the ParamParser and GeometryStructure objects created
    *  in main() allow ProblemStructure to ask the ParamParser and
    *  GeometryStructure for information it would not otherwise have access to,
@@ -30,8 +28,7 @@ ProblemStructure::ProblemStructure
    *  user. 
    */
     parser (pp),
-    geometry (gs),
-    wrapper (grid) {
+    geometry (gs) {
   /** The majority of calls to the shared GeometryStructure object come from
    *  requests for the pointers to data in memory, but access to
    *  GeometryStructure is also required to find the values of M and N, the
