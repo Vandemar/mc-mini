@@ -90,9 +90,13 @@ void ProblemStructure::initializeTemperature() {
   } else if (temperatureModel == "fallingSquare") {
 // In this implementation, the temperature functions merely as a compositional field with a value
 // of 1 inside the square and 0 outside the square.  
+// The ratio of the falling square to the grid is 1 to 25. The square is placed 
+// s.t 0.4 <= dx <= 0.6 and 0.1 <= dy <= 0.3
+    float dx = 1/M;
+    float dy = 1/N; 
     for (int i = 0; i < M; ++i)
       for (int j = 0; j < N; ++j) {
-        if ((M / 4 < j && j < 3 * M / 4) && (N / 4 < i && i < 3 * N / 4))
+        if (( dy*j+dy/2 >= 0.7 && dy*j+dy/2 <= 0.3)  || (dx*i+dx/2 >= 0.4 && dx*i+dx/2 <= 0.6))
           temperatureWindow (j, i) = referenceTemperature + temperatureScale;
         else
           temperatureWindow (j, i) = referenceTemperature;
