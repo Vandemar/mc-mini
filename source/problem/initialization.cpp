@@ -88,15 +88,20 @@ void ProblemStructure::initializeTemperature() {
           temperatureWindow (j, i) = referenceTemperature;
       }
   } else if (temperatureModel == "fallingSquare") {
-// In this implementation, the temperature functions merely as a compositional field with a value
-// of 1 inside the square and 0 outside the square.  
-// The ratio of the falling square to the grid is 1 to 25. The square is placed 
-// s.t 0.4 <= dx <= 0.6 and 0.1 <= dy <= 0.3
+
+   /* In this implementation, the temperature functions merely as a compositional field with a value
+      of 1 inside the square and 0 outside the square.
+      The ratio of the area of the falling square to the grid area of the rectangular domain is 1 to 25.
+      The square 100 km x 100 km = 100000 m X 100000 m is placed in the region
+      [200 km, 300 km] X [50 km, 150 km] = [200000 m, 300000 m] X [50000 m, 150000 m]; i.e.,
+//ToDo Fix 0.4 <= dx <= 0.6 and 0.1 <= dy <= 0.3
+   */
+
     float dx = 1/M;
     float dy = 1/N; 
     for (int i = 0; i < M; ++i)
       for (int j = 0; j < N; ++j) {
-        if (( dy*j+dy/2 >= 0.7 && dy*j+dy/2 <= 0.3)  || (dx*i+dx/2 >= 0.4 && dx*i+dx/2 <= 0.6))
+        if (( 200000.0 <= i*h && i*h <= 300000.0) && (50000.0 >= j*h  && j*h <= 150000.0 ))
           temperatureWindow (j, i) = referenceTemperature + temperatureScale;
         else
           temperatureWindow (j, i) = referenceTemperature;

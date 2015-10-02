@@ -65,9 +65,23 @@ ProblemStructure::ProblemStructure
 
     parser.queryParamDouble ("xExtent",          xExtent, 0.0);
     parser.queryParamDouble ("yExtent",          yExtent, 0.0);
+
+    h = yExtent / double(N);
+
+    assert ((xExtent / double(M)) == (yExtent / double(N)));
+
+//TODO Originally Ted set this up to ensure that dx = dy = h. On 215-10-02 EGP & HL
+//  changed it so one can specify xExtent AND yextent independently under the assumption
+//  the user knows that one must have yExtent / double(N) = xExtent / double(N) = h.
+//  We should probably write a check here and throw an exception if this is not true.
+//  Also it appears that Ted's original implementation confused M and N here as well.
     
-    assert (((xExtent == 0) ^ (yExtent == 0)));
-    
+/* Ted's original code:
+ *
+ *
+ * assert (((xExtent == 0) ^ (yExtent == 0)));
+ *
+ *
     if (xExtent == 0) {
       h      = yExtent / double(M);
       xExtent = h * double(N);
@@ -75,6 +89,8 @@ ProblemStructure::ProblemStructure
       h      = xExtent / double(N);
       yExtent = h * double(M);
     }
+  */
+
 
     parser.getParamDouble   ("diffusivity",      diffusivity);
 
@@ -159,7 +175,7 @@ void ProblemStructure::recalculateTimestep() {
   if (time + deltaT > endTime) { deltaT = endTime - time; }
 
   #ifdef DEBUG
-    cout << "<Recalculated timestep as " << deltaT << ">" << endl;
+    cout << "<Recalculated time step as " << deltaT << ">" << endl;
   #endif
 }
 
