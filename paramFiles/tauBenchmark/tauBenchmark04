@@ -4,7 +4,7 @@ enter geometryParams
   # Rows in the problem domain
   set M=32
   # Columns in the problem domain
-  set N=65
+  set N=64
 leave
 
 # Problem parameter section. Includes parameters describing the specifics of the

@@ -3,7 +3,6 @@
 #include <string>
 #include <iostream>
 #include <Eigen/Dense>
-#include <stdlib.h>
 
 using namespace Eigen;
 using namespace std;
@@ -30,12 +29,8 @@ DataWindow<T>::DataWindow (T* _basePtr, unsigned int _columns, unsigned int _row
 
 template<class T>
 T& DataWindow<T>::operator() (unsigned int _col, unsigned int _row) {
-	if (_row * __cols + _col < __cols * __rows )
-		return __basePtr[_row * __cols + _col];
-	else {
-		cout << "Out of bounds" << endl;
-		exit(-1);
-	}
+    return __basePtr[_row * __cols + _col];
+
 }
 
 template<class T>
