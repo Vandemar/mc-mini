@@ -36,7 +36,6 @@ void ProblemStructure::initializeTimestep() {
 }
 
 void ProblemStructure::initializeTemperature() {
-  //Note that only the circle is properly tuned with the change of indexes
   DataWindow<double> temperatureWindow (geometry.getTemperatureData(), M, N);
 
   double referenceTemperature;
@@ -54,9 +53,9 @@ void ProblemStructure::initializeTemperature() {
   
   if (temperatureModel == "constant") {
     
-    for (int i = 0; i < M; ++i)
-      for (int j = 0; j < N; ++j)
-        temperatureWindow (j, i) = referenceTemperature;
+    for (int j = 0; j < N; ++j)
+      for (int i = 0; i < M; ++i)
+        temperatureWindow (i, j) = referenceTemperature;
    
   } else if (temperatureModel == "sineWave") {
     int xModes;
@@ -73,16 +72,17 @@ void ProblemStructure::initializeTemperature() {
       parser.pop();
     }
 
-    for (int i = 0; i < M; ++i)
-      for (int j = 0; j < N; ++j)
-        temperatureWindow (j, i) = referenceTemperature +
+    for (int j = 0; j < N; ++j)
+      for (int i = 0; i < M; ++i)
+        temperatureWindow (i, j) = referenceTemperature +
                                    sin ((i + 0.5) * h * xModes * M_PI / xExtent) * 
                                    sin ((j + 0.5) * h * yModes * M_PI / yExtent) * 
                                    temperatureScale;
 
   } else if (temperatureModel == "squareWave") {
-    for (int i = 0; i < M; ++i)
-      for (int j = 0; j < N; ++j) {
+    //TODO: Swap the indicies. -HL
+    for (int j = 0; j < N; ++j) 
+      for (int i = 0; i < M; ++i) {
         if ((M / 4 < j && j < 3 * M / 4) && (N / 4 < i && i < 3 * N / 4))
           temperatureWindow (j, i) = referenceTemperature + temperatureScale;
         else
@@ -98,19 +98,17 @@ void ProblemStructure::initializeTemperature() {
 //ToDo Fix 0.4 <= dx <= 0.6 and 0.1 <= dy <= 0.3
    */
 
-    for (int i = 0; i < M; ++i) {
-      for (int j = 0; j < N; ++j) {
+    for (int j = 0; j < N; ++j) {
+      for (int i = 0; i < M; ++i) {
         if (( 200000.0 <= i*h && i*h <= 300000.0) && (50000.0 >= j*h  && j*h <= 150000.0 ))
-          temperatureWindow (j, i) = referenceTemperature + temperatureScale;
+          temperatureWindow (i, j) = referenceTemperature + temperatureScale;
         else
-          temperatureWindow (j, i) = referenceTemperature;
+          temperatureWindow (i, j) = referenceTemperature;
       }
     }  
   } else if (temperatureModel == "circle") {
-    //Modified to fit new indexing scheme. -HL
-     double center_x;
-     double center_y;
-     double radius;
+     double center_x, center_y, radius;
+
      if (parser.push ("problemParams")) {
        if (parser.tryPush ("initialTemperatureParams")) {
          parser.getParamDouble ("radius", radius);
