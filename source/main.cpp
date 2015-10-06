@@ -31,7 +31,7 @@ int main(int argc, char ** argv) {
     exit (-1);
   }
 
-  setNbThreads(16);
+  //setNbThreads(16);
 
   ParamParser parser(string{argv[1]});
   GeometryStructure geometry (parser);
@@ -40,7 +40,9 @@ int main(int argc, char ** argv) {
 
   problem.initializeProblem();
   
-  problem.updateForcingTerms();
+  output.writeHDF5File ();
+
+  /*problem.updateForcingTerms();
   problem.solveStokes();
 
   problem.recalculateTimestep();
@@ -58,7 +60,7 @@ int main(int argc, char ** argv) {
   output.writeHDF5File (problem.getTimestepNumber());
   cerr << "Timestep: " << problem.getTimestepNumber() << "; t = " << problem.getTime() << endl;
 
-  output.writeHDF5File();
+  output.writeHDF5File();*/
   
   return 0;
 }

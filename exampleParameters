@@ -2,9 +2,9 @@
 # the geometry of the problem (size of the domain, dimensions, etc...)
 enter geometryParams
   # Rows in the problem domain
-  set M=256
+  set M=5
   # Columns in the problem domain
-  set N=256
+  set N=10
 leave
 
 # Problem parameter section. Includes parameters describing the specifics of the
@@ -86,11 +86,11 @@ enter problemParams
     # Number of modes in the y-direction (for use with sineWave initial conditions.)
     # set yModes=2
     # Radius (for circle initial conditions.)
-    set radius=0.25
+    set radius=0.28
     # X-Position of the center of the circular inclusion (for circle initial conditions.)
     set xCenter=0.5
     # Y-position of the center of the circular inclusion (for circle initial conditions.)
-    set yCenter=0.3
+    set yCenter=0.5
   leave
 
   # Temperature boundary parameters for the given problem

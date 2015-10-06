@@ -36,7 +36,8 @@ void ProblemStructure::initializeTimestep() {
 }
 
 void ProblemStructure::initializeTemperature() {
-  DataWindow<double> temperatureWindow (geometry.getTemperatureData(), N, M);
+  //Note that only the circle is properly tuned with the change of indexes
+  DataWindow<double> temperatureWindow (geometry.getTemperatureData(), M, N);
 
   double referenceTemperature;
   double temperatureScale;
@@ -97,16 +98,16 @@ void ProblemStructure::initializeTemperature() {
 //ToDo Fix 0.4 <= dx <= 0.6 and 0.1 <= dy <= 0.3
    */
 
-    float dx = 1/M;
-    float dy = 1/N; 
-    for (int i = 0; i < M; ++i)
+    for (int i = 0; i < M; ++i) {
       for (int j = 0; j < N; ++j) {
         if (( 200000.0 <= i*h && i*h <= 300000.0) && (50000.0 >= j*h  && j*h <= 150000.0 ))
           temperatureWindow (j, i) = referenceTemperature + temperatureScale;
         else
           temperatureWindow (j, i) = referenceTemperature;
       }
+    }  
   } else if (temperatureModel == "circle") {
+    //Modified to fit new indexing scheme. -HL
      double center_x;
      double center_y;
      double radius;
@@ -122,10 +123,10 @@ void ProblemStructure::initializeTemperature() {
 
      for (int i = 0; i < M; ++i)
        for (int j= 0; j < N; ++j) {
-         if ( std::sqrt(std::pow((i*h+h/2)-(center_y),2.0) + std::pow((j*h+h/2)-(center_x),2.0))  < radius )
-           temperatureWindow (j, i) = referenceTemperature + temperatureScale;
+         if ( std::sqrt(std::pow((i*h+h/2)-(xExtent * center_x),2.0) + std::pow((j*h+h/2)-(yExtent * center_y),2.0))  < 2*h )
+           temperatureWindow (i, j) = referenceTemperature + temperatureScale;
          else
-           temperatureWindow (j, i) = referenceTemperature; 
+           temperatureWindow (i, j) = referenceTemperature; 
        }
   } else {
     cerr << "<Unexpected temperature model: \"" << boundaryModel << "\" : Shutting down now>" << endl;
@@ -140,6 +141,7 @@ void ProblemStructure::initializeTemperature() {
 }
 
 void ProblemStructure::initializeTemperatureBoundary() {
+  //TODO: Is the temperature boundary on the top and bottom or right and left of the grid?
   DataWindow<double> temperatureBoundaryWindow (geometry.getTemperatureBoundaryData(), N, 2);
 
   double upperTemperature;
@@ -163,11 +165,12 @@ void ProblemStructure::initializeTemperatureBoundary() {
 }
 
 void ProblemStructure::initializeVelocityBoundary() {
-  DataWindow<double> uVelocityBoundaryWindow (geometry.getUVelocityBoundaryData(), 2, M);
-  DataWindow<double> vVelocityBoundaryWindow (geometry.getVVelocityBoundaryData(), N, 2);
+  DataWindow<double> uVelocityBoundaryWindow (geometry.getUVelocityBoundaryData(), 2, N);
+  DataWindow<double> vVelocityBoundaryWindow (geometry.getVVelocityBoundaryData(), M, 2);
 
 
   if (boundaryModel == "tauBenchmark") {
+    //TODO: Fix the indexing scheme
     for (int i = 0; i < M; ++i)
       for (int j = 0; j < 2; ++j)
         uVelocityBoundaryWindow (j, i) = cos (j * N * h) * sin ((i + 0.5) * h);
@@ -177,12 +180,12 @@ void ProblemStructure::initializeVelocityBoundary() {
   } else if (boundaryModel == "solCXBenchmark" ||
              boundaryModel == "solKZBenchmark" ||
              boundaryModel == "noFlux") {
-    for (int i = 0; i < M; ++i)
-      for (int j = 0; j < 2; ++j)
-        uVelocityBoundaryWindow (j, i) = 0;
     for (int i = 0; i < 2; ++i)
       for (int j = 0; j < N; ++j)
-        vVelocityBoundaryWindow (j, i) = 0;
+        uVelocityBoundaryWindow (i, j) = 0;
+    for (int i = 0; i < M; ++i)
+      for (int j = 0; j < 2; ++j)
+        vVelocityBoundaryWindow (i, j) = 0;
   } else {
     cerr << "<Unexpected boundary model: \"" << boundaryModel << "\" : Shutting down now>" << endl;
     exit(-1);

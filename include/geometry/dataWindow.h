@@ -3,43 +3,37 @@
 #include <string>
 #include <iostream>
 #include <Eigen/Dense>
-#include <stdlib.h>
 
-using namespace Eigen;
-using namespace std;
+// Column-major data window per Eigen.
 
-template<class T>
+template<typename T>
 class DataWindow {
   public:
-    DataWindow (T* _basePtr, unsigned int _columns, unsigned int _rows);
-    T& operator() (unsigned int _col, unsigned int _row);
-    const string displayMatrix();
+    DataWindow (T* basePtr = nullptr,
+		unsigned int nXCells = 0,
+		unsigned int nYCells = 0
+	        ) :
+		_basePtr(basePtr),
+		_nXCells(nXCells), 
+    _nYCells(nYCells)
+		{};
+	
+  //Memory must be ordered in row-major format because hdf5 supports only row-major format.
+  //I have had no luck finding a transpose funtion in hdf5. -HL
+    T& operator() (unsigned int x_i, unsigned int y_i) 
+      {
+	return _basePtr[y_i * _nXCells + x_i];
+      }
+    
+    void displayMatrix() 
+      {
+	std::cout << Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> >(_basePtr, _nYCells, _nXCells).colwise().reverse();
+      }
+
   private:
-    T*           __basePtr;
-    unsigned int __cols;
-    unsigned int __rows;
+    T *const           _basePtr;
+    // Number of cells in the x-direction
+    const unsigned int _nXCells;
+    // Number of cells in the y-direction
+    const unsigned int _nYCells;
 };
-
-// Column-major data window, as per both Eigen and Visit.
-
-template<class T>
-DataWindow<T>::DataWindow (T* _basePtr, unsigned int _columns, unsigned int _rows) :
-    __basePtr (_basePtr),
-    __cols (_columns),
-    __rows (_rows) {};
-
-template<class T>
-T& DataWindow<T>::operator() (unsigned int _col, unsigned int _row) {
-	if (_row * __cols + _col < __cols * __rows )
-		return __basePtr[_row * __cols + _col];
-	else {
-		cout << "Out of bounds" << endl;
-		exit(-1);
-	}
-}
-
-template<class T>
-const string DataWindow<T>::displayMatrix() {
-  std::cout << Eigen::Map<Matrix<T, Dynamic, Dynamic, RowMajor> >(__basePtr, __rows, __cols).colwise().reverse();
-  return "";
-}

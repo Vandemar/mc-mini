@@ -9,12 +9,12 @@ GeometryStructure::GeometryStructure (ParamParser& parser) {
     parser.pop();
   }
   //                                U             V             P/T        Viscosity
-  stokesData              = new double[M * (N - 1) + (M - 1) * N + M * N];
-  velocityBoundaryData    = new double[M *  2      +  2      * N];
-  forcingData             = new double[M * (N - 1) + (M - 1) * N];
+  stokesData              = new double[(M-1)*N + (N-1)*M + M*N];
+  velocityBoundaryData    = new double[N*2   +  2*M];
+  forcingData             = new double[(M-1)*N + (N-1)*N];
   viscosityData           = new double[                                    (M + 1) * (N + 1)];                      
   temperatureData         = new double[                            M * N];
-  temperatureBoundaryData = new double[M * 2       + 2       * N];
+  temperatureBoundaryData = new double[N * 2       + 2       * M];
 }
 
 GeometryStructure::~GeometryStructure() {
@@ -49,12 +49,12 @@ double * GeometryStructure::getUVelocityData() {
 }
 
 double * GeometryStructure::getVVelocityData() {
-  return stokesData + M * (N - 1);
+  return stokesData + N * (M - 1);
 }
 
 // Pressure Data
 double * GeometryStructure::getPressureData() {
-  return stokesData + M * (N - 1) + (M - 1) * N;
+  return stokesData + N * (M - 1) + (N - 1) * M;
 }
 
 // Velocity Boundary Data
@@ -67,7 +67,7 @@ double * GeometryStructure::getUVelocityBoundaryData() {
 }
 
 double * GeometryStructure::getVVelocityBoundaryData() {
-  return velocityBoundaryData + 2 * M;
+  return velocityBoundaryData + 2 * N;
 }
 
 // Forcing Data
@@ -80,7 +80,7 @@ double * GeometryStructure::getUForcingData() {
 }
 
 double * GeometryStructure::getVForcingData() {
-  return forcingData + M * (N - 1);
+  return forcingData + N * (M - 1);
 }
 
 // Viscosity Data
@@ -103,5 +103,5 @@ double * GeometryStructure::getUTemperatureBoundaryData() {
 }
 
 double * GeometryStructure::getVTemperatureBoundaryData() {
-  return temperatureBoundaryData + M * 2;
+  return temperatureBoundaryData + N * 2;
 }

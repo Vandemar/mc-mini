@@ -25,7 +25,9 @@ class OutputStructure {
     GeometryStructure& geometry;
     ProblemStructure&  problem;
 
-    int M;
+    //The number of cells in the x-direction.
+    int M; 
+    //The number of cells in the y-direction.
     int N;
 
     double dx;

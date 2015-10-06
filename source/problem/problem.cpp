@@ -32,7 +32,7 @@ ProblemStructure::ProblemStructure
   /** The majority of calls to the shared GeometryStructure object come from
    *  requests for the pointers to data in memory, but access to
    *  GeometryStructure is also required to find the values of M and N, the
-   *  height and width of the domain in cells. 
+   *  width and height of the domain in cells. 
    */
   M = geometry.getM();
   N = geometry.getN();
@@ -66,8 +66,18 @@ ProblemStructure::ProblemStructure
     parser.queryParamDouble ("xExtent",          xExtent, 0.0);
     parser.queryParamDouble ("yExtent",          yExtent, 0.0);
 
-    h = yExtent / double(N);
-
+    double h_x = xExtent / double(M);
+    double h_y = yExtent / double(N);
+    if (0 > h_x && h_x < h_y) {
+      h = h_x;
+      yExtent = h * double(N);
+      std::cout << "yExtent has been approximated to " << yExtent << std::endl;
+    } else {
+      h = h_y;
+      xExtent = h * double(M);
+      std::cout << "xExtent has been approximated to " << xExtent << std::endl;
+    } 
+ 
     assert ((xExtent / double(M)) == (yExtent / double(N)));
 
 //TODO Originally Ted set this up to ensure that dx = dy = h. On 215-10-02 EGP & HL
@@ -75,22 +85,19 @@ ProblemStructure::ProblemStructure
 //  the user knows that one must have yExtent / double(N) = xExtent / double(N) = h.
 //  We should probably write a check here and throw an exception if this is not true.
 //  Also it appears that Ted's original implementation confused M and N here as well.
-    
-/* Ted's original code:
+/*
  *
  *
- * assert (((xExtent == 0) ^ (yExtent == 0)));
- *
- *
-    if (xExtent == 0) {
-      h      = yExtent / double(M);
-      xExtent = h * double(N);
-    } else {
-      h      = xExtent / double(N);
-      yExtent = h * double(M);
-    }
-  */
+  assert (((xExtent == 0) ^ (yExtent == 0)));
 
+  if (xExtent == 0) {
+      h      = yExtent / double(N);
+      xExtent = h * double(M);
+  } else {
+      h      = xExtent / double(M);
+      yExtent = h * double(N);
+  }
+*/
 
     parser.getParamDouble   ("diffusivity",      diffusivity);
 
