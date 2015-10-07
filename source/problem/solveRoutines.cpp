@@ -29,8 +29,8 @@ using namespace std;
 // Update the forcing terms
 // T -> F
 void ProblemStructure::updateForcingTerms() {
-  DataWindow<double> uForcingWindow (geometry.getUForcingData(), N - 1, M);
-  DataWindow<double> vForcingWindow (geometry.getVForcingData(), N, M - 1);
+  DataWindow<double> uForcingWindow (geometry.getUForcingData(), M - 1, N);
+  DataWindow<double> vForcingWindow (geometry.getVForcingData(), M, N - 1);
 
   #ifdef DEBUG
     cout << "<Calculating forcing model using \"" << forcingModel << "\">" << endl;
@@ -38,36 +38,36 @@ void ProblemStructure::updateForcingTerms() {
 
   if (forcingModel == "tauBenchmark") {
     // Benchmark taken from Tau (1991; JCP Vol. 99)
-    for (int i = 0; i < M; ++i)
-      for (int j = 0; j < N - 1; ++j)
-        uForcingWindow (j, i) = 3 * cos ((j + 1) * h) * sin ((i + 0.5) * h);
+    for (int j = 0; j < N; ++j)
+      for (int i = 0; i < M-1; ++i)
+        uForcingWindow (i, j) = 3 * cos ((i + 1) * h) * sin ((j + 0.5) * h);
 
-    for (int i = 0; i < M - 1; ++i)
-      for (int j = 0; j < N; ++j)
-        vForcingWindow (j, i) = -sin ((j + 0.5) * h) * cos ((i + 1) * h);
+    for (int j = 0; j < N-1; ++j)
+      for (int i = 0; i < M; ++i)
+        vForcingWindow (i, j) = -sin ((i + 0.5) * h) * cos ((j + 1) * h);
 
   } else if (forcingModel == "solCXBenchmark" ||
              forcingModel == "solKZBenchmark") {
     // solCX Benchmark taken from Kronbichler et al. (2011)
-    for (int i = 0; i < M; ++i)
-      for (int j = 0; j < N - 1; ++j)
-        uForcingWindow (j, i) = 0;
+    for (int j = 0; j < N; ++j)
+      for (int i = 0; i < M-1; ++i)
+        uForcingWindow (i, j) = 0;
 
-    for (int i = 0; i < M - 1; ++i)
-      for (int j = 0; j < N; ++j)
-        vForcingWindow (j, i) = - sin((i + 0.5) * M_PI * h) * cos ((j + 1) * M_PI * h);
+    for (int j = 0; j < N-1; ++j)
+      for (int i = 0; i < M; ++i)
+        vForcingWindow (i, j) = - sin((j + 0.5) * M_PI * h) * cos ((i + 1) * M_PI * h);
 
   } else if (forcingModel == "vorticalFlow") {
-    for (int i = 0; i < M; ++i)
-      for (int j = 0; j < (N - 1); j++) 
-        uForcingWindow (j, i) = cos ((j + 1) * h) * sin ((i + 0.5) * h);
+    for (int j = 0; j < (N - 1); j++) 
+      for (int i = 0; i < M; ++i)
+        uForcingWindow (i, j) = cos ((i + 1) * h) * sin ((j + 0.5) * h);
 
-    for (int i = 0; i < (M - 1); ++i)
-      for (int j = 0; j < N; ++j) 
-        vForcingWindow (j, i) = -sin ((j + 0.5) * h) * cos ((i + 1) * h);
+    for (int j = 0; j < N-1; ++j) 
+      for (int i = 0; i < M; ++i)
+        vForcingWindow (i, j) = -sin ((i + 0.5) * h) * cos ((j + 1) * h);
 
   } else if (forcingModel == "buoyancy") {
-    DataWindow<double> temperatureWindow (geometry.getTemperatureData(), N, M);
+    DataWindow<double> temperatureWindow (geometry.getTemperatureData(), M, N);
 
     double referenceTemperature;
     double densityConstant;
@@ -83,17 +83,17 @@ void ProblemStructure::updateForcingTerms() {
       parser.pop();
     }
 
-    for (int i = 0; i < M; ++i)
-      for (int j = 0; j < (N - 1); ++j)
-        uForcingWindow (j, i) = 0;
+    for (int j = 0; j < N; ++j)
+      for (int i = 0; i < M-1; ++i)
+        uForcingWindow (i, j) = 0;
 
 // TODO: EGP thinks the average should be ((temperatureWindow(j,i)+temperatureWindow(j+1,i))/2)  
-    for (int i = 0; i < (M - 1); ++i)
-      for (int j = 0; j < N; ++j) {
-        vForcingWindow (j, i) =  -1 * densityConstant *
+    for (int j = 0; j < N-1; ++j) {
+      for (int i = 0; i < M; ++i)
+        vForcingWindow (i, j) =  -1 * densityConstant *
                                   (1 - thermalExpansion * 
-                                   ((temperatureWindow (j, i) + 
-                                     temperatureWindow (j, i + 1)) / 2 -
+                                   ((temperatureWindow (i, j) + 
+                                     temperatureWindow (i, j + 1)) / 2 -
                                       referenceTemperature));
       }
   } else if (forcingModel == "fallingSquare") {
@@ -113,16 +113,16 @@ void ProblemStructure::updateForcingTerms() {
       parser.pop();
     }
 
-    for (int i = 0; i < M; ++i)
-      for (int j = 0; j < (N - 1); ++j)
-        uForcingWindow (j, i) = 0;
+    for (int j = 0; j < N; ++j)
+      for (int i = 0; i < M-1; ++i)
+        uForcingWindow (i, j) = 0;
 
-    for (int i = 0; i < (M - 1); ++i)
-      for (int j = 0; j < N; ++j) {
-        vForcingWindow (j, i) =  -1 * densityConstant *
+    for (int j = 0; j < N-1; ++j) {
+      for (int i = 0; i < M; ++i)
+        vForcingWindow (i, j) =  -1 * densityConstant *
                                   (1 - thermalExpansion * 
-                                   ((temperatureWindow (j, i) + 
-                                     temperatureWindow (j+1, i)) / 2 -
+                                   ((temperatureWindow (i, j) + 
+                                     temperatureWindow (i+1, j)) / 2 -
                                       referenceTemperature));
       }
  } else {

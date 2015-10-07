@@ -11,7 +11,7 @@ GeometryStructure::GeometryStructure (ParamParser& parser) {
   //                                U             V             P/T        Viscosity
   stokesData              = new double[(M-1)*N + (N-1)*M + M*N];
   velocityBoundaryData    = new double[N*2   +  2*M];
-  forcingData             = new double[(M-1)*N + (N-1)*N];
+  forcingData             = new double[(M-1)*N + (N-1)*M];
   viscosityData           = new double[                                    (M + 1) * (N + 1)];                      
   temperatureData         = new double[                            M * N];
   temperatureBoundaryData = new double[N * 2       + 2       * M];

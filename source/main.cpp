@@ -40,10 +40,10 @@ int main(int argc, char ** argv) {
 
   problem.initializeProblem();
   
-  output.writeHDF5File ();
 
-  /*problem.updateForcingTerms();
-  problem.solveStokes();
+  problem.updateForcingTerms();
+  output.writeHDF5File ();
+  /*problem.solveStokes();
 
   problem.recalculateTimestep();
   
