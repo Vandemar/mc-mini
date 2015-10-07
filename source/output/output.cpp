@@ -159,8 +159,8 @@ void OutputStructure::writeHDF5File() {
   static DataWindow<double> interpolatedUVelocityWindow (interpolatedUVelocityData, M, N);
   static DataWindow<double> uVelocityWindow (geometry.getUVelocityData(), M - 1, N);
   static DataWindow<double> uVelocityBoundaryWindow (geometry.getUVelocityBoundaryData(), 2, N);
-  for (int i = 0; i < M; ++i)
-    for (int j = 0; j < N; ++j)
+  for (int j = 0; j < N; ++j)
+    for (int i = 0; i < M; ++i)
       if (i == 0) {
         interpolatedUVelocityWindow (i, j) = (uVelocityBoundaryWindow (0, j) +
                                               uVelocityWindow         (i, j)) / 2;
@@ -187,24 +187,24 @@ void OutputStructure::writeHDF5File() {
            << "          " << outputFilename + ".h5:/UVelocity" << endl
            << "        </DataItem>" << endl
            << "      </Attribute>" << endl;
-  /*
+  
   // Write V Velocity
   static double * interpolatedVVelocityData = new double [M * N];
-  static DataWindow<double> interpolatedVVelocityWindow (interpolatedVVelocityData, N, M);
-  static DataWindow<double> vVelocityWindow (geometry.getVVelocityData(), N, M - 1);
-  static DataWindow<double> vVelocityBoundaryWindow (geometry.getVVelocityBoundaryData(), N, 2);  
+  static DataWindow<double> interpolatedVVelocityWindow (interpolatedVVelocityData, M, N);
+  static DataWindow<double> vVelocityWindow (geometry.getVVelocityData(), M, N - 1);
+  static DataWindow<double> vVelocityBoundaryWindow (geometry.getVVelocityBoundaryData(), M, 2);  
   
-  for (int i = 0; i < M; ++i)
-    for (int j = 0; j < N; ++j)
-      if (i == 0) {
-        interpolatedVVelocityWindow (j, i) = (vVelocityBoundaryWindow (j, 0) +
-                                              vVelocityWindow         (j, i)) / 2;
-      } else if (i == (M - 1)) {
-        interpolatedVVelocityWindow (j, i) = (vVelocityWindow         (j, (i - 1)) +
-                                              vVelocityBoundaryWindow (j, 1)) / 2;
+  for (int j = 0; j < N; ++j)
+    for (int i = 0; i < M; ++i)
+      if (j == 0) {
+        interpolatedVVelocityWindow (i, j) = (vVelocityBoundaryWindow (i, 0) +
+                                              vVelocityWindow         (i, j)) / 2;
+      } else if (j == (N - 1)) {
+        interpolatedVVelocityWindow (i, j) = (vVelocityWindow         (i, (j - 1)) +
+                                              vVelocityBoundaryWindow (i, 1)) / 2;
       } else {
-        interpolatedVVelocityWindow (j, i) = (vVelocityWindow         (j, (i - 1)) +
-                                              vVelocityWindow         (j, i)) / 2;
+        interpolatedVVelocityWindow (i, j) = (vVelocityWindow         (i, (j - 1)) +
+                                              vVelocityWindow         (i, j)) / 2;
       }
   dataset = H5Dcreate (outputFile, "VVelocity", datatype, dataspace,
                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -218,36 +218,36 @@ void OutputStructure::writeHDF5File() {
   }
 
   xdmfFile << "      <Attribute Name=\"VVelocity\" AttributeType=\"Scalar\" Center=\"Cell\">" << endl
-           << "        <DataItem Dimensions=\"" << M << " " << N << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
+           << "        <DataItem Dimensions=\"" << N << " " << M << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
            << "          " << outputFilename + ".h5:/VVelocity" << endl
            << "        </DataItem>" << endl
            << "      </Attribute>" << endl;
                                                         
 
   static double * velocityDivergenceData = new double[M * N];
-  static DataWindow<double> velocityDivergenceWindow (velocityDivergenceData, N, M);
+  static DataWindow<double> velocityDivergenceWindow (velocityDivergenceData, M, N);
 
-  for (int i = 0; i < M; ++i) {
-    for (int j = 0; j < N; ++j) {
+  for (int j = 0; j < N; ++j) {
+    for (int i = 0; i < M; ++i) {
       double uDivergence, vDivergence;
 
-      if (i == 0) {
-        vDivergence = (vVelocityBoundaryWindow (j, 0) - vVelocityWindow (j, i)) / dx;
-      } else if (i == (M - 1)) {
-        vDivergence = (vVelocityWindow (j, i - 1) - vVelocityBoundaryWindow (j, 1)) / dx;
-      } else {
-        vDivergence = (vVelocityWindow (j, i - 1) - vVelocityWindow (j, i)) / dx;
-      }
-
       if (j == 0) {
-        uDivergence = (uVelocityBoundaryWindow (0, i) - uVelocityWindow (j, i)) / dx;
+        vDivergence = (vVelocityBoundaryWindow (i, 0) - vVelocityWindow (i, j)) / dx;
       } else if (j == (N - 1)) {
-        uDivergence = (uVelocityWindow (j - 1, i) - uVelocityBoundaryWindow (1, i)) / dx;
+        vDivergence = (vVelocityWindow (i, j - 1) - vVelocityBoundaryWindow (i, 1)) / dx;
       } else {
-        uDivergence = (uVelocityWindow (j - 1, i) - uVelocityWindow (j, i)) / dx;
+        vDivergence = (vVelocityWindow (i, j - 1) - vVelocityWindow (i, j)) / dx;
       }
 
-      velocityDivergenceWindow (j, i) = uDivergence + vDivergence;
+      if (i == 0) {
+        uDivergence = (uVelocityBoundaryWindow (0, j) - uVelocityWindow (i, j)) / dx;
+      } else if (i == (M - 1)) {
+        uDivergence = (uVelocityWindow (i - 1, j) - uVelocityBoundaryWindow (1, j)) / dx;
+      } else {
+        uDivergence = (uVelocityWindow (i - 1, j) - uVelocityWindow (i, j)) / dx;
+      }
+
+      velocityDivergenceWindow (i, j) = uDivergence + vDivergence;
     }
   }
   
@@ -258,12 +258,12 @@ void OutputStructure::writeHDF5File() {
                      H5P_DEFAULT, velocityDivergenceData);
 
   xdmfFile << "      <Attribute Name=\"Divergence\" AttributeType=\"Scalar\" Center=\"Cell\">" << endl
-           << "        <DataItem Dimensions=\"" << M << " " << N << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
+           << "        <DataItem Dimensions=\"" << N << " " << M << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
            << "          " << outputFilename + ".h5:/Divergence" << endl
            << "        </DataItem>" << endl
            << "      </Attribute>" << endl;
  
-  dimsf[0] = (M + 1); dimsf[1] = (N + 1);
+  dimsf[0] = (N + 1); dimsf[1] = (M + 1);
   
   dataspace = H5Screate_simple (2, dimsf, NULL);
   datatype = H5Tcopy (H5T_NATIVE_DOUBLE);
@@ -282,15 +282,10 @@ void OutputStructure::writeHDF5File() {
   }
    
   xdmfFile << "      <Attribute Name=\"Viscosity\" AttributeType=\"Scalar\" Center=\"Node\">" << endl
-           << "        <DataItem Dimensions=\"" << M + 1 << " " << N + 1 << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
+           << "        <DataItem Dimensions=\"" << N + 1 << " " << M + 1 << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
            << "          " << outputFilename + ".h5:/Viscosity" << endl
            << "        </DataItem>" << endl
            << "      </Attribute>" << endl
-           << "    </Grid>" << endl
-           << "  </Domain>" << endl
-           << "</Xdmf>" << endl;
-*/
-           xdmfFile
            << "    </Grid>" << endl
            << "  </Domain>" << endl
            << "</Xdmf>" << endl;
@@ -311,7 +306,7 @@ void OutputStructure::writeHDF5File (const int timestep) {
 
   problemXdmfFile << "      <Grid Name=\"mesh\" GridType=\"Uniform\">" << endl
                   << "        <Time Value=\"" << problem.getTime() << "\"/>" << endl
-                  << "        <Topology TopologyType=\"2DCoRectMesh\" NumberOfElements=\"" << M + 1 << " " << N + 1<< "\"/>" << endl
+                  << "        <Topology TopologyType=\"2DCoRectMesh\" NumberOfElements=\"" << N + 1 << " " << M + 1 << "\"/>" << endl
                   << "        <Geometry GeometryType=\"Origin_DxDy\">" << endl
                   << "          <DataItem Dimensions=\"2\">" << endl
                   << "            0 0" << endl
@@ -324,7 +319,7 @@ void OutputStructure::writeHDF5File (const int timestep) {
   hid_t dataset, datatype, dataspace;
   herr_t status;
   hsize_t dimsf[2];
-  dimsf[0] = M; dimsf[1] = N;
+  dimsf[0] = N; dimsf[1] = M;
   
   dataspace = H5Screate_simple (2, dimsf, NULL);
   datatype = H5Tcopy (H5T_NATIVE_DOUBLE);
@@ -348,7 +343,7 @@ void OutputStructure::writeHDF5File (const int timestep) {
   }
 
   problemXdmfFile << "        <Attribute Name=\"Temperature\" AttributeType=\"Scalar\" Center=\"Cell\">" << endl
-                  << "          <DataItem Dimensions=\"" << M << " " << N << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
+                  << "          <DataItem Dimensions=\"" << N << " " << M << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
                   << "            " << outputFilename + "-" + boost::lexical_cast<std::string> (timestep) << ".h5:/Temperature" << endl
                   << "          </DataItem>" << endl
                   << "        </Attribute>" << endl;
@@ -365,30 +360,28 @@ void OutputStructure::writeHDF5File (const int timestep) {
   }
 
   problemXdmfFile << "        <Attribute Name=\"Pressure\" AttributeType=\"Scalar\" Center=\"Cell\">" << endl
-                  << "          <DataItem Dimensions=\"" << M << " " << N << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
+                  << "          <DataItem Dimensions=\"" << N << " " << M << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
                   << "            " << outputFilename + "-" + boost::lexical_cast<std::string> (timestep) << ".h5:/Pressure" << endl
                   << "          </DataItem>" << endl
                   << "        </Attribute>" << endl;
 
   // Write U Velocity
-  static double * interpolatedUVelocityData = new double [M * N];
-  static DataWindow<double> interpolatedUVelocityWindow (interpolatedUVelocityData, N, M);
-  static DataWindow<double> uVelocityWindow (geometry.getUVelocityData(), N - 1, M);
-  static DataWindow<double> uVelocityBoundaryWindow (geometry.getUVelocityBoundaryData(), 2, M);
-
+  static double * interpolatedUVelocityData = new double [N * M];
+  static DataWindow<double> interpolatedUVelocityWindow (interpolatedUVelocityData, M, N);
+  static DataWindow<double> uVelocityWindow (geometry.getUVelocityData(), M - 1, N);
+  static DataWindow<double> uVelocityBoundaryWindow (geometry.getUVelocityBoundaryData(), 2, N);
   for (int i = 0; i < M; ++i)
     for (int j = 0; j < N; ++j)
-      if (j == 0) {
-        interpolatedUVelocityWindow (j, i) = (uVelocityBoundaryWindow (0, i) +
-                                              uVelocityWindow         (j, i)) / 2;
-      } else if (j == (N - 1)) {
-        interpolatedUVelocityWindow (j, i) = (uVelocityWindow         (j - 1, i) +
-                                              uVelocityBoundaryWindow (1, i)) / 2;
+      if (i == 0) {
+        interpolatedUVelocityWindow (i, j) = (uVelocityBoundaryWindow (0, j) +
+                                              uVelocityWindow         (i, j)) / 2;
+      } else if (i == (M - 1)) {
+        interpolatedUVelocityWindow (i, j) = (uVelocityWindow         (i, j) +
+                                              uVelocityBoundaryWindow (1, j)) / 2;
       } else {
-        interpolatedUVelocityWindow (j, i) = (uVelocityWindow (j - 1, i) +
-                                              uVelocityWindow (j,     i)) / 2;
+        interpolatedUVelocityWindow (i, j) = (uVelocityWindow (i - 1, j) +
+                                              uVelocityWindow (i,     j)) / 2;
       }
-
   dataset = H5Dcreate (outputFile, "UVelocity", datatype, dataspace,
                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   
@@ -401,30 +394,29 @@ void OutputStructure::writeHDF5File (const int timestep) {
   }
 
   problemXdmfFile << "        <Attribute Name=\"UVelocity\" AttributeType=\"Scalar\" Center=\"Cell\">" << endl
-                  << "          <DataItem Dimensions=\"" << M << " " << N << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
+                  << "          <DataItem Dimensions=\"" << N << " " << M << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
                   << "            " << outputFilename + "-" + boost::lexical_cast<std::string> (timestep) << ".h5:/UVelocity" << endl
                   << "          </DataItem>" << endl
                   << "        </Attribute>" << endl;
   
   // Write V Velocity
   static double * interpolatedVVelocityData = new double [M * N];
-  static DataWindow<double> interpolatedVVelocityWindow (interpolatedVVelocityData, N, M);
-  static DataWindow<double> vVelocityWindow (geometry.getVVelocityData(), N, M - 1);
-  static DataWindow<double> vVelocityBoundaryWindow (geometry.getVVelocityBoundaryData(), N, 2);
+  static DataWindow<double> interpolatedVVelocityWindow (interpolatedVVelocityData, M, N);
+  static DataWindow<double> vVelocityWindow (geometry.getVVelocityData(), M, N - 1);
+  static DataWindow<double> vVelocityBoundaryWindow (geometry.getVVelocityBoundaryData(), M, 2);  
   
-  for (int i = 0; i < M; ++i)
-    for (int j = 0; j < N; ++j)
-      if (i == 0) {
-        interpolatedVVelocityWindow (j, i) = (vVelocityBoundaryWindow (j, 0) +
-                                              vVelocityWindow         (j, i)) / 2;
-      } else if (i == (M - 1)) {
-        interpolatedVVelocityWindow (j, i) = (vVelocityWindow         (j, i - 1) +
-                                              vVelocityBoundaryWindow (j, 1)) / 2;
+  for (int j = 0; j < N; ++j)
+    for (int i = 0; i < M; ++i)
+      if (j == 0) {
+        interpolatedVVelocityWindow (i, j) = (vVelocityBoundaryWindow (i, 0) +
+                                              vVelocityWindow         (i, j)) / 2;
+      } else if (j == (N - 1)) {
+        interpolatedVVelocityWindow (i, j) = (vVelocityWindow         (i, (j - 1)) +
+                                              vVelocityBoundaryWindow (i, 1)) / 2;
       } else {
-        interpolatedVVelocityWindow (j, i) = (vVelocityWindow (j, i - 1) +
-                                              vVelocityWindow (j, i)) / 2;
+        interpolatedVVelocityWindow (i, j) = (vVelocityWindow         (i, (j - 1)) +
+                                              vVelocityWindow         (i, j)) / 2;
       }
-
   dataset = H5Dcreate (outputFile, "VVelocity", datatype, dataspace, 
                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
@@ -437,35 +429,35 @@ void OutputStructure::writeHDF5File (const int timestep) {
   }
 
   problemXdmfFile << "        <Attribute Name=\"VVelocity\" AttributeType=\"Scalar\" Center=\"Cell\">" << endl
-                  << "          <DataItem Dimensions=\"" << M << " " << N << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
+                  << "          <DataItem Dimensions=\"" << N << " " << M << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
                   << "            " << outputFilename + "-" + boost::lexical_cast<std::string> (timestep) << ".h5:/VVelocity" << endl
                   << "          </DataItem>" << endl
                   << "        </Attribute>" << endl;
 
   static double * velocityDivergenceData = new double[M * N];
-  static DataWindow<double> velocityDivergenceWindow (velocityDivergenceData, N, M);
+  static DataWindow<double> velocityDivergenceWindow (velocityDivergenceData, M, N);
 
-  for (int i = 0; i < M; ++i) {
-    for (int j = 0; j < N; ++j) {
+  for (int j = 0; j < N; ++j) {
+    for (int i = 0; i < M; ++i) {
       double uDivergence, vDivergence;
 
-      if (i == 0) {
-        vDivergence = (vVelocityBoundaryWindow (j, 0) - vVelocityWindow (j, i)) / dx;
-      } else if (i == (M - 1)) {
-        vDivergence = (vVelocityWindow (j, i - 1) - vVelocityBoundaryWindow (j, 1)) / dx;
-      } else {
-        vDivergence = (vVelocityWindow (j, i - 1) - vVelocityWindow (j, i)) / dx;
-      }
-
       if (j == 0) {
-        uDivergence = (uVelocityBoundaryWindow (0, i) - uVelocityWindow (j, i)) / dx;
+        vDivergence = (vVelocityBoundaryWindow (i, 0) - vVelocityWindow (i, j)) / dx;
       } else if (j == (N - 1)) {
-        uDivergence = (uVelocityWindow (j - 1, i) - uVelocityBoundaryWindow (1, i)) / dx;
+        vDivergence = (vVelocityWindow (i, j - 1) - vVelocityBoundaryWindow (i, 1)) / dx;
       } else {
-        uDivergence = (uVelocityWindow (j - 1, i) - uVelocityWindow (j, i)) / dx;
+        vDivergence = (vVelocityWindow (i, j - 1) - vVelocityWindow (i, j)) / dx;
       }
 
-      velocityDivergenceWindow (j, i) = uDivergence + vDivergence;
+      if (i == 0) {
+        uDivergence = (uVelocityBoundaryWindow (0, j) - uVelocityWindow (i, j)) / dx;
+      } else if (i == (M - 1)) {
+        uDivergence = (uVelocityWindow (i - 1, j) - uVelocityBoundaryWindow (1, j)) / dx;
+      } else {
+        uDivergence = (uVelocityWindow (i - 1, j) - uVelocityWindow (i, j)) / dx;
+      }
+
+      velocityDivergenceWindow (i, j) = uDivergence + vDivergence;
     }
   }
 
@@ -481,12 +473,12 @@ void OutputStructure::writeHDF5File (const int timestep) {
   }
 
   problemXdmfFile << "        <Attribute Name=\"Divergence\" AttributeType=\"Scalar\" Center=\"Cell\">" << endl
-                  << "          <DataItem Dimensions=\"" << M << " " << N << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
+                  << "          <DataItem Dimensions=\"" << N << " " << M << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
                   << "            " << outputFilename + "-" + boost::lexical_cast<std::string> (timestep) << ".h5:/Divergence" << endl
                   << "          </DataItem>" << endl
                   << "        </Attribute>" << endl;
 
-  dimsf[0] = (M + 1); dimsf[1] = (N + 1);
+  dimsf[0] = (N + 1); dimsf[1] = (M + 1);
  
   dataspace = H5Screate_simple (2, dimsf, NULL);
   datatype = H5Tcopy (H5T_NATIVE_DOUBLE);
@@ -510,7 +502,7 @@ void OutputStructure::writeHDF5File (const int timestep) {
   }
 
   problemXdmfFile << "        <Attribute Name=\"Viscosity\" AttributeType=\"Scalar\" Center=\"Node\">" << endl
-                  << "          <DataItem Dimensions=\"" << M + 1<< " " << N + 1 << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
+                  << "          <DataItem Dimensions=\"" << N + 1<< " " << M + 1 << "\" NumberType=\"Float\" Precision=\"8\" Format=\"HDF\">" << endl
                   << "            " << outputFilename + "-" + boost::lexical_cast<std::string> (timestep) << ".h5:/Viscosity" << endl
                   << "          </DataItem>" << endl
                   << "        </Attribute>" << endl
