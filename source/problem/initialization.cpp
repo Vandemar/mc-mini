@@ -83,10 +83,10 @@ void ProblemStructure::initializeTemperature() {
     //TODO: Swap the indicies. -HL
     for (int j = 0; j < N; ++j) 
       for (int i = 0; i < M; ++i) {
-        if ((M / 4 < j && j < 3 * M / 4) && (N / 4 < i && i < 3 * N / 4))
-          temperatureWindow (j, i) = referenceTemperature + temperatureScale;
+        if ((xExtent * 0.25 <= i*h && i*h <= xExtent * 0.75) && (yExtent * 0.25 <= j*h && j*h <= yExtent * 0.75))
+          temperatureWindow (i, j) = referenceTemperature + temperatureScale;
         else
-          temperatureWindow (j, i) = referenceTemperature;
+          temperatureWindow (i, j) = referenceTemperature;
       }
   } else if (temperatureModel == "fallingSquare") {
 
@@ -100,7 +100,7 @@ void ProblemStructure::initializeTemperature() {
 
     for (int j = 0; j < N; ++j) {
       for (int i = 0; i < M; ++i) {
-        if (( 200000.0 <= i*h && i*h <= 300000.0) && (50000.0 >= j*h  && j*h <= 150000.0 ))
+        if ((xExtent * 0.4 <= i*h && i*h <= xExtent * 0.6) && (yExtent * 0.7 >= j*h  && j*h <= yExtent * 0.9))
           temperatureWindow (i, j) = referenceTemperature + temperatureScale;
         else
           temperatureWindow (i, j) = referenceTemperature;
@@ -140,7 +140,7 @@ void ProblemStructure::initializeTemperature() {
 
 void ProblemStructure::initializeTemperatureBoundary() {
   //TODO: Is the temperature boundary on the top and bottom or right and left of the grid?
-  DataWindow<double> temperatureBoundaryWindow (geometry.getTemperatureBoundaryData(), N, 2);
+  DataWindow<double> temperatureBoundaryWindow (geometry.getTemperatureBoundaryData(), M, 2);
 
   double upperTemperature;
   double lowerTemperature;
@@ -156,9 +156,9 @@ void ProblemStructure::initializeTemperatureBoundary() {
     parser.pop();
   }
 
-  for (int j = 0; j < N; ++j) {
-    temperatureBoundaryWindow (j, 0) = lowerTemperature;
-    temperatureBoundaryWindow (j, 1) = upperTemperature;
+  for (int i = 0; i < M; ++i) {
+    temperatureBoundaryWindow (i, 0) = lowerTemperature;
+    temperatureBoundaryWindow (i, 1) = upperTemperature;
   }
 }
 
@@ -169,20 +169,20 @@ void ProblemStructure::initializeVelocityBoundary() {
 
   if (boundaryModel == "tauBenchmark") {
     //TODO: Fix the indexing scheme
-    for (int i = 0; i < M; ++i)
-      for (int j = 0; j < 2; ++j)
-        uVelocityBoundaryWindow (j, i) = cos (j * N * h) * sin ((i + 0.5) * h);
-    for (int i = 0; i < 2; ++i)
-      for (int j = 0; j < N; ++j)
-        vVelocityBoundaryWindow (j, i) = -sin ((j + 0.5) * h) * cos (i * M * h);
+    for (int j = 0; j < N; ++j)
+      for (int i = 0; i < 2; ++i)
+        uVelocityBoundaryWindow (i, j) = cos (i * M * h) * sin ((j + 0.5) * h);
+    for (int j = 0; j < 2; ++j)
+      for (int i = 0; i < M; ++i)
+        vVelocityBoundaryWindow (i, j) = -sin ((i + 0.5) * h) * cos (j * N * h);
   } else if (boundaryModel == "solCXBenchmark" ||
              boundaryModel == "solKZBenchmark" ||
              boundaryModel == "noFlux") {
-    for (int i = 0; i < 2; ++i)
-      for (int j = 0; j < N; ++j)
+    for (int j = 0; j < N; ++j)
+      for (int i = 0; i < 2; ++i)
         uVelocityBoundaryWindow (i, j) = 0;
-    for (int i = 0; i < M; ++i)
-      for (int j = 0; j < 2; ++j)
+    for (int j = 0; j < 2; ++j)
+      for (int i = 0; i < M; ++i)
         vVelocityBoundaryWindow (i, j) = 0;
   } else {
     cerr << "<Unexpected boundary model: \"" << boundaryModel << "\" : Shutting down now>" << endl;
@@ -200,7 +200,7 @@ void ProblemStructure::initializeVelocityBoundary() {
 }
 
 void ProblemStructure::initializeViscosity() {
-  DataWindow<double> viscosityWindow (geometry.getViscosityData(), N + 1, M + 1);
+  DataWindow<double> viscosityWindow (geometry.getViscosityData(), M + 1, N + 1);
 
   double viscosity;
 
@@ -216,19 +216,19 @@ void ProblemStructure::initializeViscosity() {
       parser.pop();
     }
 
-    for (int i = 0; i < (M + 1); ++i)
-      for (int j = 0; j < (N + 1); ++j)
-        viscosityWindow (j, i) = viscosity;
+    for (int j = 0; j < (N + 1); ++j)
+      for (int i = 0; i < (M + 1); ++i)
+        viscosityWindow (i, j) = viscosity;
   } else if (viscosityModel == "tauBenchmark") {
     viscosity = 1.0;
   } else if (viscosityModel == "solCXBenchmark") {
-    for (int i = 0; i < (M + 1); ++i)
-      for (int j = 0; j < (N + 1); ++j) 
-        viscosityWindow (j, i) = (j <= N / 2) ? 1.0 : 1.0E06;
+    for (int j = 0; j < (N + 1); ++j) 
+      for (int i = 0; i < (M + 1); ++i)
+        viscosityWindow (i, j) = (i <= M / 2) ? 1.0 : 1.0E06;
   } else if (viscosityModel == "solKZBenchmark") {
-    for (int i = 0; i < (M + 1); ++i)
-      for (int j = 0; j < (N + 1); ++j)
-        viscosityWindow (j, i) = 1.0 + j * h * 1.0E06;
+    for (int j = 0; j < (N + 1); ++j)
+      for (int i = 0; i < (M + 1); ++i)
+        viscosityWindow (i, j) = 1.0 + i * h * 1.0E06;
   } else {
     cerr << "Unexpected viscosity model: \"" << viscosityModel << "\" : Shutting down now!" << endl;
     exit(-1);

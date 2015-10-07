@@ -25,9 +25,10 @@ class DataWindow {
 	return _basePtr[y_i * _nXCells + x_i];
       }
     
-    void displayMatrix() 
+    const std::string displayMatrix() 
       {
 	std::cout << Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> >(_basePtr, _nYCells, _nXCells).colwise().reverse();
+  return "";
       }
 
   private:
