@@ -141,12 +141,12 @@ void ProblemStructure::updateForcingTerms() {
 // Solve the stokes equation
 // F -> U X P
 void ProblemStructure::solveStokes() {
-  Map<VectorXd> stokesSolnVector (geometry.getStokesData(), M * (N - 1) + (M - 1) * N + M * N);
+  Map<VectorXd> stokesSolnVector (geometry.getStokesData(), N * (M - 1) + (N - 1) * M + N * M);
   
   #ifndef USE_DENSE
-  static SparseMatrix<double> stokesMatrix   (3 * M * N - M - N, 3 * M * N - M - N);
-  static SparseMatrix<double> forcingMatrix  (3 * M * N - M - N, 2 * M * N - M - N);
-  static SparseMatrix<double> boundaryMatrix (3 * M * N - M - N, 2 * M + 2 * N);
+  static SparseMatrix<double> stokesMatrix   (3 * N * M - N - M, 3 * N * M - N - M);
+  static SparseMatrix<double> forcingMatrix  (3 * N * M - N - M, 2 * N * M - N - M);
+  static SparseMatrix<double> boundaryMatrix (3 * N * M - N - M, 2 * N + 2 * M);
   static SparseLU<SparseMatrix<double>, COLAMDOrdering<int> > solver;
   #else
   /* Don't use this unless you hate your computer. */
@@ -163,11 +163,11 @@ void ProblemStructure::solveStokes() {
   if (!(initialized) || !(viscosityModel=="constant")) {
 
   #ifndef USE_DENSE
-    SparseForms::makeStokesMatrix   (stokesMatrix,   M, N, h, viscosityData);
+    SparseForms::makeStokesMatrix   (stokesMatrix,   N, M, h, viscosityData);
     stokesMatrix.makeCompressed();
-    SparseForms::makeForcingMatrix  (forcingMatrix,  M, N);
+    SparseForms::makeForcingMatrix  (forcingMatrix,  N, M);
     forcingMatrix.makeCompressed();
-    SparseForms::makeBoundaryMatrix (boundaryMatrix, M, N, h, viscosityData);
+    SparseForms::makeBoundaryMatrix (boundaryMatrix, N, M, h, viscosityData);
     boundaryMatrix.makeCompressed();
 
     solver.analyzePattern (stokesMatrix);
@@ -182,12 +182,12 @@ void ProblemStructure::solveStokes() {
     initialized = true;
   }
 
-  stokesSolnVector = solver.solve (forcingMatrix  * Map<VectorXd>(geometry.getForcingData(), 2 * M * N - M - N) + 
-                                   boundaryMatrix * Map<VectorXd>(geometry.getVelocityBoundaryData(), 2 * M + 2 * N));
+  stokesSolnVector = solver.solve (forcingMatrix  * Map<VectorXd>(geometry.getForcingData(), 2 * N * M - N - M) + 
+                                   boundaryMatrix * Map<VectorXd>(geometry.getVelocityBoundaryData(), 2 * N + 2 * M));
 
-  Map<VectorXd> pressureVector (geometry.getPressureData(), M * N);
-  double pressureMean = pressureVector.sum() / (M * N);
-  pressureVector -= VectorXd::Constant (M * N, pressureMean);
+  Map<VectorXd> pressureVector (geometry.getPressureData(), N * M);
+  double pressureMean = pressureVector.sum() / (N * M);
+  pressureVector -= VectorXd::Constant (N * M, pressureMean);
 
 #ifdef DEBUG
   cout << "<Calculated Stokes Equation Solutions>" << endl;
