@@ -42,8 +42,7 @@ int main(int argc, char ** argv) {
   
 
   problem.updateForcingTerms();
-  output.writeHDF5File ();
-  /*problem.solveStokes();
+  problem.solveStokes();
 
   problem.recalculateTimestep();
   
@@ -60,7 +59,7 @@ int main(int argc, char ** argv) {
   output.writeHDF5File (problem.getTimestepNumber());
   cerr << "Timestep: " << problem.getTimestepNumber() << "; t = " << problem.getTime() << endl;
 
-  output.writeHDF5File();*/
+  output.writeHDF5File();
   
   return 0;
 }
