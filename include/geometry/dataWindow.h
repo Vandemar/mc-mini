@@ -5,11 +5,12 @@
 
 #include <Eigen/Dense>
 
-namespace e = Eigen;
+// Column-major data window per Eigen.
 
 template<typename T>
 class DataWindow {
   public:
+<<<<<<< HEAD
     DataWindow (T* basePtr,
 		unsigned int nXCells,
 		unsigned int nYCells) :
@@ -31,13 +32,37 @@ class DataWindow {
       {
 	std::cout << Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> >(_basePtr, _nYCells, _nXCells).colwise().reverse();
   return "";
+=======
+    DataWindow (T* basePtr = nullptr,
+		unsigned int columns = 0,
+		unsigned int rows = 0
+	        ) :
+		_basePtr(basePtr),
+		_cols(columns),
+		_rows(rows) 
+		{};
+		
+    T& operator() (unsigned int col, unsigned int row) 
+      {
+	return _basePtr[row * _cols + col];
+      }
+    
+    void displayMatrix() 
+      {
+	std::cout << Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> >(_basePtr, _rows, _cols).colwise().reverse();
+>>>>>>> convergence-Tests
       }
 
   private:
     T *const           _basePtr;
+<<<<<<< HEAD
     // Number of cells in the x-direction
     const unsigned int _nXCells;
     // Number of cells in the y-direction
     const unsigned int _nYCells;
+=======
+    const unsigned int _cols;
+    const unsigned int _rows;
+>>>>>>> convergence-Tests
 };
 
