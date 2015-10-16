@@ -15,7 +15,6 @@
 #include "output/output.h"
 #include "parser/parser.h"
 
-
 using namespace Eigen;
 using namespace std;
 

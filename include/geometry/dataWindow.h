@@ -1,7 +1,8 @@
 #pragma once
 
-#include <string>
 #include <iostream>
+#include <cassert>
+
 #include <Eigen/Dense>
 
 // Column-major data window per Eigen.
@@ -33,3 +34,4 @@ class DataWindow {
     const unsigned int _cols;
     const unsigned int _rows;
 };
+
