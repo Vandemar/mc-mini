@@ -1,4 +1,5 @@
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/35b2b5240176d130f6c10fb7e474f23a "githalytics.com")](http://githalytics.com/TedStudley/mc-mini)
+
+[![Build Status](https://travis-ci.org/TedStudley/mc-mini.svg?branch=build_system_replacement)](https://travis-ci.org/TedStudley/mc-mini)
 
 Simple solver for stokes equation with temperature Advection/Diffusion. 
 libeigen3-dev and libhdf5-dev packages are required to compile and run.
