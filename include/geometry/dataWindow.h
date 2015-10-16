@@ -1,35 +1,38 @@
 #pragma once
 
-#include <string>
 #include <iostream>
+#include <cassert>
+
 #include <Eigen/Dense>
 
-// Column-major data window per Eigen.
+namespace e = Eigen;
 
 template<typename T>
 class DataWindow {
   public:
-    DataWindow (T* basePtr = nullptr,
-		unsigned int nXCells = 0,
-		unsigned int nYCells = 0
-	        ) :
-		_basePtr(basePtr),
-		_nXCells(nXCells), 
-    _nYCells(nYCells)
-		{};
+<<<<<<< HEAD
+    DataWindow (T* basePtr, 
+                unsigned int nXCells, 
+                unsigned int nYCells) : 
+        _basePtr(basePtr), 
+        _nXCells(nXCells), 
+        _nYCells(nYCells) {};
 	
-  //Memory must be ordered in row-major format because hdf5 supports only row-major format.
-  //I have had no luck finding a transpose funtion in hdf5. -HL
     T& operator() (unsigned int x_i, unsigned int y_i) 
-      {
-	return _basePtr[y_i * _nXCells + x_i];
-      }
+    { 
+      // Ensure we haven't gone out-of-bounds on memory. There may be cases
+      // where we actually want to do that, but we can remove the assertion
+      // if that actually happens.
+      assert(y_i * nXCells + x_i < nXCells * nYCells);
+
+	    return _basePtr[y_i * _nXCells + x_i];
+    }
     
     const std::string displayMatrix() 
-      {
-	std::cout << Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> >(_basePtr, _nYCells, _nXCells).colwise().reverse();
-  return "";
-      }
+    {
+	    std::cout << Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> >(_basePtr, _nYCells, _nXCells).colwise().reverse();
+      return "";
+    }
 
   private:
     T *const           _basePtr;

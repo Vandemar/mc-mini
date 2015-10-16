@@ -119,7 +119,7 @@ void OutputStructure::writeHDF5File() {
   }
 
   // Write temperature
-  dataset = H5Dcreate (outputFile, "Temperature", datatype, dataspace, 
+  dataset = H5Dcreate2(outputFile, "Temperature", datatype, dataspace, 
                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   
   status = H5Dwrite (dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL,
@@ -137,7 +137,7 @@ void OutputStructure::writeHDF5File() {
            << "      </Attribute>" << endl;
 
   // Write pressure
-  dataset = H5Dcreate (outputFile, "Pressure", datatype, dataspace,
+  dataset = H5Dcreate2 (outputFile, "Pressure", datatype, dataspace,
                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
   status = H5Dwrite (dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL,
@@ -171,7 +171,7 @@ void OutputStructure::writeHDF5File() {
         interpolatedUVelocityWindow (i, j) = (uVelocityWindow (i - 1, j) +
                                               uVelocityWindow (i,     j)) / 2;
       }
-  dataset = H5Dcreate (outputFile, "UVelocity", datatype, dataspace,
+  dataset = H5Dcreate2 (outputFile, "UVelocity", datatype, dataspace,
                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
   status = H5Dwrite (dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL,
@@ -206,7 +206,7 @@ void OutputStructure::writeHDF5File() {
         interpolatedVVelocityWindow (i, j) = (vVelocityWindow         (i, (j - 1)) +
                                               vVelocityWindow         (i, j)) / 2;
       }
-  dataset = H5Dcreate (outputFile, "VVelocity", datatype, dataspace,
+  dataset = H5Dcreate2 (outputFile, "VVelocity", datatype, dataspace,
                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   
   status = H5Dwrite (dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL,
@@ -251,7 +251,7 @@ void OutputStructure::writeHDF5File() {
     }
   }
   
-  dataset = H5Dcreate (outputFile, "Divergence", datatype, dataspace,
+  dataset = H5Dcreate2 (outputFile, "Divergence", datatype, dataspace,
                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   
   status = H5Dwrite (dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL,
@@ -270,7 +270,7 @@ void OutputStructure::writeHDF5File() {
   status = H5Tset_order (datatype, H5T_ORDER_LE);
   
   // Write Viscosity
-  dataset = H5Dcreate (outputFile, "Viscosity", datatype, dataspace,
+  dataset = H5Dcreate2 (outputFile, "Viscosity", datatype, dataspace,
                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   
   status = H5Dwrite (dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL,
@@ -331,7 +331,7 @@ void OutputStructure::writeHDF5File (const int timestep) {
   }
 
   // Write temperature
-  dataset = H5Dcreate (outputFile, "Temperature", datatype, dataspace,
+  dataset = H5Dcreate2(outputFile, "Temperature", datatype, dataspace,
                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   
   status = H5Dwrite (dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL,
@@ -349,9 +349,9 @@ void OutputStructure::writeHDF5File (const int timestep) {
                   << "        </Attribute>" << endl;
 
   // Write pressure
-  dataset = H5Dcreate (outputFile, "Pressure", datatype, dataspace,
+  dataset = H5Dcreate2(outputFile, "Pressure", datatype, dataspace,
                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-  status = H5Dwrite (dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL,
+  status = H5Dwrite(dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL,
                      H5P_DEFAULT, geometry.getPressureData());  
 
   if (status == -1) {
@@ -382,7 +382,8 @@ void OutputStructure::writeHDF5File (const int timestep) {
         interpolatedUVelocityWindow (i, j) = (uVelocityWindow (i - 1, j) +
                                               uVelocityWindow (i,     j)) / 2;
       }
-  dataset = H5Dcreate (outputFile, "UVelocity", datatype, dataspace,
+
+  dataset = H5Dcreate2(outputFile, "UVelocity", datatype, dataspace,
                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   
   status = H5Dwrite (dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL,
@@ -417,7 +418,8 @@ void OutputStructure::writeHDF5File (const int timestep) {
         interpolatedVVelocityWindow (i, j) = (vVelocityWindow         (i, (j - 1)) +
                                               vVelocityWindow         (i, j)) / 2;
       }
-  dataset = H5Dcreate (outputFile, "VVelocity", datatype, dataspace, 
+
+  dataset = H5Dcreate2(outputFile, "VVelocity", datatype, dataspace, 
                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
   status = H5Dwrite (dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL,
@@ -461,7 +463,7 @@ void OutputStructure::writeHDF5File (const int timestep) {
     }
   }
 
-  dataset = H5Dcreate (outputFile, "Divergence", datatype, dataspace,
+  dataset = H5Dcreate2(outputFile, "Divergence", datatype, dataspace,
                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
   status = H5Dwrite (dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL,
@@ -490,7 +492,7 @@ void OutputStructure::writeHDF5File (const int timestep) {
   }
  
   // Write Viscosity
-  dataset = H5Dcreate (outputFile, "Viscosity", datatype, dataspace,
+  dataset = H5Dcreate2(outputFile, "Viscosity", datatype, dataspace,
                        H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
   status = H5Dwrite (dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL,
