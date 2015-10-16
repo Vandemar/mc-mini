@@ -1,7 +1,7 @@
 import lib_output_processing as output
 import subprocess
 
-output.test()
+output.tau_benchmark_convergence()
 
 ## Create HDF5 databse if it does not exist
 #output.create_output_database()
