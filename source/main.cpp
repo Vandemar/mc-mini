@@ -2,6 +2,12 @@
 #include <iomanip>
 #include <cassert>
 
+#include <Eigen/OrderingMethods>
+#include <Eigen/SparseCholesky>
+#include <Eigen/SparseQR>
+#include <Eigen/Sparse>
+#include <Eigen/Dense>
+
 #include "matrixForms/sparseForms.h"
 #include "matrixForms/denseForms.h"
 #include "geometry/geometry.h"

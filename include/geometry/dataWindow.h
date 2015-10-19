@@ -10,7 +10,6 @@ namespace e = Eigen;
 template<typename T>
 class DataWindow {
   public:
-<<<<<<< HEAD
     DataWindow (T* basePtr, 
                 unsigned int nXCells, 
                 unsigned int nYCells) : 
