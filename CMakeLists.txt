@@ -71,6 +71,11 @@ find_package(HDF5 REQUIRED)
 include_directories(${HDF5_INCLUDE_DIR})
 set(LIBRARIES ${LIBRARIES} ${HDF5_LIBRARIES})
 
+# Adding DEBUG flag if specified
+if(DEBUG)
+  add_definitions(-DDEBUG)
+endif()
+
 if(TESTS_ENABLED)
   add_subdirectory(test)
 endif()

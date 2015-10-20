@@ -40,11 +40,11 @@ void ProblemStructure::updateForcingTerms() {
     // Benchmark taken from Tau (1991; JCP Vol. 99)
     for (int j = 0; j < N; ++j)
       for (int i = 0; i < M-1; ++i)
-        uForcingWindow (i, j) = 3 * cos ((i + 1) * h) * sin ((j + 0.5) * h);
+        uForcingWindow (i, j) = 3 * cos ((i + 1) * h) * sin ((j * h) + h/2);
 
     for (int j = 0; j < N-1; ++j)
       for (int i = 0; i < M; ++i)
-        vForcingWindow (i, j) = -sin ((i + 0.5) * h) * cos ((j + 1) * h);
+        vForcingWindow (i, j) = -sin ((i * h) + h/2) * cos ((j + 1) * h);
 
   } else if (forcingModel == "solCXBenchmark" ||
              forcingModel == "solKZBenchmark") {

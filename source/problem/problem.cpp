@@ -68,14 +68,31 @@ ProblemStructure::ProblemStructure
 
     double h_x = xExtent / double(M);
     double h_y = yExtent / double(N);
-    if (0 > h_x && h_x < h_y) {
-      h = h_x;
-      yExtent = h * double(N);
-      std::cout << "yExtent has been approximated to " << yExtent << std::endl;
-    } else {
+    
+    if (h_x == 0 && h_y == 0)
+    {
+      std::cout << "Define either xExtent or yExtent or both in parameter file" << std::endl;
+      exit(-1);
+    }
+    else if (h_x == 0)
+    {
       h = h_y;
       xExtent = h * double(M);
       std::cout << "xExtent has been approximated to " << xExtent << std::endl;
+    } 
+    else if (h_y == 0)
+    {
+      h = h_x;
+      yExtent = h * double(N);
+      std::cout << "yExtent has been approximated to " << yExtent << std::endl;
+    }
+    else {
+      //define h to be the finer resoltution
+      h = h_x <= h_y ? h_x : h_y;
+      xExtent = h*(double) M;
+      yExtent = h*(double) N;
+      std::cout << "xExtent has been approximated to " << xExtent << std::endl;
+      std::cout << "yExtent has been approximated to " << yExtent << std::endl;
     } 
  
     assert ((xExtent / double(M)) == (yExtent / double(N)));

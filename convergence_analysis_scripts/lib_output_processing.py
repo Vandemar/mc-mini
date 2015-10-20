@@ -83,7 +83,7 @@ def tau_benchmark_convergence():
   # Write the table to the text file.  
   output_text_table_file.write(opening + "\n\n")
   output_text_table_file.write(header + "\n\n")
-  for k in range(1, 7):
+  for k in range(1, 3):
    output_text_table_file.write(convergence_row(k) + "\n")
   output_text_table_file.write("\n")
  
@@ -130,18 +130,18 @@ def error_norms_data(dataset):
 # Exact solution for uVelocity restricted to the cell-centers of the grid by interpolation (averaging).
  def v_x_exact_interpolated(i,j):
    # NOTE: This is the correct index ordering, i.e. "ij" <=> "xy"
-  #return 0.5 * ( cos(i*h_x)*sin( (j+0.5)*h_y) + cos( (i+1)*h_x )*sin( (j+0.5)*h_y))
+  return 0.5 * ( cos(i*h_x)*sin( (j+0.5)*h_y) + cos( (i+1)*h_x )*sin( (j+0.5)*h_y))
   # NOTE: This is the incorrect index ordering, i.e. "ji" <=> "xy"
   # Convergence takes place for this (incorrect) index ordering.
-  return 0.5 * ( cos((j+0.5)*h_y)*sin( i*h_x) + cos( (j+0.5)*h_y )*sin((i+1)*h_x ))
+  #return 0.5 * ( cos((j+0.5)*h_y)*sin( i*h_x) + cos( (j+0.5)*h_y )*sin((i+1)*h_x ))
 
 # Exact solution for vVelocity restricted to the cell-centers of the grid by interpolation (averaging).
  def v_y_exact_interpolated(i,j):
   # NOTE: This is the correct index ordering, i.e. "ij" <=> "xy"
-  #return 0.5 * (-sin( (i+0.5)*h_x )*cos(j*h_y) - sin( (i+0.5)*h_x )*cos( (j+1)*h_y))
+  return 0.5 * (-sin( (i+0.5)*h_x )*cos(j*h_y) - sin( (i+0.5)*h_x )*cos( (j+1)*h_y))
   # NOTE: This is the incorrect index ordering, i.e. "ji" <=> "xy"
   # Convergence takes place for this (incorrect) index ordering.
-  return 0.5 * (-sin( j*h_y )*cos((i+0.5)*h_x) - sin( (j+1)*h_y )*cos( (i+0.5)*h_x)) 
+  #return 0.5 * (-sin( j*h_y )*cos((i+0.5)*h_x) - sin( (j+1)*h_y )*cos( (i+0.5)*h_x)) 
 
 # Dictionary containing "dataset_name : corresponding_exact_solution" key-value pairs.
  exact_solutions = {
@@ -159,14 +159,14 @@ def error_norms_data(dataset):
  errors = []
 
 # Append files to an array
- for k in range(0,7):  
+ for k in range(0,3):  
   file_path.append(output_directory + "tauBenchmark0" + str(k+1) + "-1.h5")  
   files.append(h5py.File(file_path[k], "r"))
  
  # Array of dictionaries containing errors in various norms
  _error_norms = {}
 
- for k in range(0,7):  
+ for k in range(0,3):  
   data.append(numpy.array(files[k][dataset]))
 
   dimensions = (M, N) = data[k].shape
@@ -186,7 +186,7 @@ def error_norms_data(dataset):
   }
  
  # Close the files 
- for k in range(0,7):    
+ for k in range(0,3):    
   files[k].close() 
 
  return _error_norms

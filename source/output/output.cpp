@@ -34,7 +34,6 @@ OutputStructure::OutputStructure (ParamParser&       pp,
     parser.pop();
   }
 
-  //TODO: The following code needs to be debugged. If the output path doesn't exist, the directory is not created. -HVL
   char s[128];
   sprintf(s, "test -e %s", outputPath.c_str());
   if (system(s) != 0) {
@@ -94,7 +93,7 @@ void OutputStructure::writeHDF5File() {
            << "<Xdmf Version=\"2.0\">" << endl
            << "  <Domain>" << endl
            << "    <Grid Name=\"mesh\" GridType=\"Uniform\">" << endl
-           << "      <Topology TopologyType=\"2DCoRectMesh\" NumberOfElements=\"" << N + 1 << " " << M + 1 << "\"/>" << endl
+           << "      <Topology TopologyType=\"2DCoRectMesh\" NumberOfElements=\"" << N+1 << " " << M+1 << "\"/>" << endl
            << "      <Geometry GeometryType=\"Origin_DxDy\">" << endl
            << "        <DataItem Dimensions=\"2\">" << endl
            << "          0 0" << endl
@@ -188,7 +187,7 @@ void OutputStructure::writeHDF5File() {
            << "          " << outputFilename + ".h5:/UVelocity" << endl
            << "        </DataItem>" << endl
            << "      </Attribute>" << endl;
-  
+
   // Write V Velocity
   static double * interpolatedVVelocityData = new double [M * N];
   static DataWindow<double> interpolatedVVelocityWindow (interpolatedVVelocityData, M, N);
@@ -400,7 +399,7 @@ void OutputStructure::writeHDF5File (const int timestep) {
                   << "            " << outputFilename + "-" + boost::lexical_cast<std::string> (timestep) << ".h5:/UVelocity" << endl
                   << "          </DataItem>" << endl
                   << "        </Attribute>" << endl;
-  
+
   // Write V Velocity
   static double * interpolatedVVelocityData = new double [M * N];
   static DataWindow<double> interpolatedVVelocityWindow (interpolatedVVelocityData, M, N);

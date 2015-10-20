@@ -168,13 +168,14 @@ void ProblemStructure::initializeVelocityBoundary() {
 
 
   if (boundaryModel == "tauBenchmark") {
-    //TODO: Fix the indexing scheme
-    for (int j = 0; j < N; ++j)
-      for (int i = 0; i < 2; ++i)
-        uVelocityBoundaryWindow (i, j) = cos (i * M * h) * sin ((j + 0.5) * h);
-    for (int j = 0; j < 2; ++j)
-      for (int i = 0; i < M; ++i)
-        vVelocityBoundaryWindow (i, j) = -sin ((i + 0.5) * h) * cos (j * N * h);
+    for (int j = 0; j < N; ++j) {
+        uVelocityBoundaryWindow (0, j) = sin ((j * h) + h/2);
+        uVelocityBoundaryWindow (1, j) = sin ((j * h) + h/2);
+    }
+    for (int i = 0; i < M; ++i) {
+      vVelocityBoundaryWindow (i, 0) = -sin ((i * h) + h/2);
+      vVelocityBoundaryWindow (i, 1) = sin ((i * h) + h/2);
+    }
   } else if (boundaryModel == "solCXBenchmark" ||
              boundaryModel == "solKZBenchmark" ||
              boundaryModel == "noFlux") {

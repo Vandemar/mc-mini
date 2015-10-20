@@ -2,9 +2,9 @@
 # the geometry of the problem (size of the domain, dimensions, etc...)
 enter geometryParams
   # Rows in the problem domain
-  set M=4
+  set M=8
   # Columns in the problem domain
-  set N=8
+  set N=4
 leave
 
 # Problem parameter section. Includes parameters describing the specifics of the
